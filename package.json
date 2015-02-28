@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "postinstall": "node ./node_modules/bower/bin/bower install && node ./node_modules/grunt-cli/bin/grunt build:dev"
+    "start": "node server.js"
   },
   "author": "Ahmed Jafri <me@ahmedjafri.com>, Paul Yi",
   "dependencies": {
