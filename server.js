@@ -22,4 +22,8 @@ var sequelize = new Sequelize('thirteen', 'thirteen', 'ZPMKZ82fhNjXDD78', {
 
 var User = require("./models/Users")(sequelize);
 
+
+
+
+
 module.exports = app;
