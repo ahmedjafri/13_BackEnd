@@ -2,14 +2,6 @@
 
 module.exports = function(sequelize, DataTypes) {
     var Player = sequelize.define('Player', {
-        gameId: {
-            type: DataTypes.INTEGER,
-            field: 'game_id' // Will result in an attribute that is firstName when user facing but first_name in the database
-        },
-        userId: {
-            type: DataTypes.INTEGER,
-            field: 'user_id'
-        },
         hand: {
             type: DataTypes.TEXT
         },
@@ -21,7 +13,8 @@ module.exports = function(sequelize, DataTypes) {
         freezeTableName: true, // Model tableName will be the same as the model name
         classMethods: {
             associate: function(models) {
-                // TODO: Need to implement
+                Player.belongsTo(models.User, {foreignKey : 'user_id'});
+                Player.belongsTo(models.Game, {foreignKey : 'game_id'});
             }
         }
     });

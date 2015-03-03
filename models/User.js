@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
         freezeTableName: true, // Model tableName will be the same as the model name
         classMethods: {
             associate: function(models) {
-                // TODO: Need to implement
+                User.hasMany(models.Player, {foreignKey : 'user_id'});
             }
         }
     });

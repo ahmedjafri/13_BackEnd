@@ -29,38 +29,32 @@ fs
 Object.keys(db).forEach(function(modelName) {
     if ('associate' in db[modelName]) {
         db[modelName].associate(db);
+        db[modelName].sync().then(function() {console.log("Synced ", modelName)});
     }
 });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.User.sync({force: true})
-    .then(function() {
-        User.create({
-            firstName: 'Ahmed',
-            lastName: 'Jafri'
-        }).then(function () {
-            return User.create({
-                firstName: 'Paul',
-                lastName: 'Yi'
-            });
-        }).then(function () {
-            return User.create({
-                firstName: 'Taiga',
-                lastName: 'Matsumoto'
-            });
-        }).then(function () {
-            return User.create({
-                firstName: 'Vien',
-                lastName: 'Ly'
-            });
-        }).then(function () {
-            return User.create({
-                firstName: 'Jake',
-                lastName: 'Yang'
-            });
-        });
+db.User.create({
+    firstName: 'Ahmed',
+    lastName: 'Jafri'
+});
+db.User.create({
+        firstName: 'Paul',
+        lastName: 'Yi'
+    });
+db.User.create({
+        firstName: 'Taiga',
+        lastName: 'Matsumoto'
+    });
+db.User.create({
+        firstName: 'Vien',
+        lastName: 'Ly'
+    });
+db.User.create({
+        firstName: 'Jake',
+        lastName: 'Yang'
     });
 
 module.exports = db;

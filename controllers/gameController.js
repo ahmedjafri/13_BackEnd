@@ -3,24 +3,25 @@ var Q = require('q');
 
 module.exports = {
     createGame: function(req, res) {
+        console.log(req.body)
         var friendUserIds = req.body.friendUserIds;
         var gameCreatorUserId = req.body.gameCreatorUserId;
+        friendUserIds.push(gameCreatorUserId);
 
-        var playerIds = friendUserIds.push(gameCreatorUserId);
-
-        //TODO: use Q here
-        db.Game.sync().then(function () {
-            db.Game.create();
+        var playerCreatePromises = [];
+        friendUserIds.forEach(function(id) {
+            playerCreatePromises.push(db.Player.create({
+                user_id: id
+            }));
         });
 
-        db.Player.sync().then(function() {
-
-            playerIds.forEach(function(playerId) {
-                db.Player.create({
-                    gameId: 'Ahmed',
-                    lastName: 'Jafri'
-                });
-            });
+        db.Game.create().then(function(game){
+            Q.all(playerCreatePromises)
+                .then(function(playerInstances) {
+                    game.setPlayers(playerInstances).done(function(){ res.send() });
+                })
         });
+        
+
     }
 };
