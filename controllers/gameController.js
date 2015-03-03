@@ -1,39 +1,27 @@
-var Sequelize = require('sequelize');
-
-var sequelize = new Sequelize('thirteen', 'thirteen', 'ZPMKZ82fhNjXDD78', {
-  host: 'localhost',
-  dialect: 'mysql',
-
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
-});
-
-var Player = require('../models/Player')(sequelize);
-var Game = require('../models/Game')(sequelize);
+var db = require('../models/index');
+var Q = require('q');
 
 module.exports = {
-	createGame: function(req, res) {
-		console.log(req);
-		var friendUserIds = req.body.friendUserIds;
-		var gameCreatorUserId = req.body.gameCreatorUserId;
+    createGame: function(req, res) {
+        console.log(req.body)
+        var friendUserIds = req.body.friendUserIds;
+        var gameCreatorUserId = req.body.gameCreatorUserId;
+        friendUserIds.push(gameCreatorUserId);
 
-		var playerIds = friendUserIds.push(gameCreatorUserId);
+        var playerCreatePromises = [];
+        friendUserIds.forEach(function(id) {
+            playerCreatePromises.push(db.Player.create({
+                user_id: id
+            }));
+        });
 
-		Game.sync({force: true}).then(function () {
-			Game.create();
-		});
+        db.Game.create().then(function(game){
+            Q.all(playerCreatePromises)
+                .then(function(playerInstances) {
+                    game.setPlayers(playerInstances).done(function(){ res.send() });
+                })
+        });
+        
 
-		Player.sync({force: true}).then(function() {
-
-	  		playerIds.forEach(function(playerId,index) {
-	  			Player.create({
-	    			gameId: 'Ahmed',
-	    			lastName: 'Jafri'
-	  			});
-	  		 });
-	  	});
-	}
+    }
 };

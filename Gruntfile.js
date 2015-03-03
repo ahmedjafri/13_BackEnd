@@ -27,8 +27,7 @@ module.exports = function(grunt){
             options: {
                 server: path.resolve(__dirname, 'server.js'),
                 port: 3000,
-                hostname: "localhost",
-                livereload: true
+                hostname: "localhost"
             }
         }
     },
@@ -37,11 +36,11 @@ module.exports = function(grunt){
     // https://github.com/gruntjs/grunt-contrib-watch
     watch: {
         all: {
-                files: [],
+                files: ['models/**/*.js','controllers/**/*.js'],
                 options: {
                     livereload: true
                 },
-                tasks: ['build:dev']
+                tasks: []
         }
     },
 

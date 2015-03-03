@@ -1,26 +1,23 @@
-var Sequelize = require('sequelize');
+'use strict';
 
-module.exports = function(sequelize) {
-	var Player = sequelize.define('player', {
-	  gameId: {
-	    type: Sequelize.INTEGER,
-	  },
-	  userId: {
-	    type: Sequelize.INTEGER
-	  },
-	  handOfCards: {
-	  	type: Sequelize.TEXT
-	  },
-	  status: {
-	  	type: Sequelize.INTEGER,
-	  	comment: "0-INVITED,1-JOINED,2-FINISHED"
-	  },
-	  turnNumber: {
-	  	type: Sequelize.INTEGER
-	  }
-	}, {
-	  freezeTableName: true // Model tableName will be the same as the model name
-	});
+module.exports = function(sequelize, DataTypes) {
+    var Player = sequelize.define('Player', {
+        hand: {
+            type: DataTypes.TEXT
+        },
+        status: {
+            type: DataTypes.INTEGER,
+            comment: '0-INVITED, 1-JOINED, 2-FINISHED'
+        }
+    }, {
+        freezeTableName: true, // Model tableName will be the same as the model name
+        classMethods: {
+            associate: function(models) {
+                Player.belongsTo(models.User, {foreignKey : 'user_id'});
+                Player.belongsTo(models.Game, {foreignKey : 'game_id'});
+            }
+        }
+    });
 
-	return Player;
-}
+    return Player;
+};
