@@ -26,12 +26,12 @@ fs
         db[model.name] = model;
     });
 
-Object.keys(db).forEach(function(modelName) {
-    if ('associate' in db[modelName]) {
-        db[modelName].associate(db);
-        db[modelName].sync().then(function() {console.log("Synced ", modelName)});
-    }
-});
+    ['Game', 'User', 'Player'].forEach(function(modelName) {
+        if ('associate' in db[modelName]) {
+            db[modelName].associate(db);
+            db[modelName].sync().then(function() {console.log("Synced ", modelName)});
+        } 
+    });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

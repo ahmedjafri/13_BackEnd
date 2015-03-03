@@ -21,7 +21,5 @@ module.exports = {
                     game.setPlayers(playerInstances).done(function(){ res.send() });
                 })
         });
-        
-
     }
 };
