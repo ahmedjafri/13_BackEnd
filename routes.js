@@ -15,5 +15,6 @@ app.get('/', function(req, res) {
 });
 
 app.post('/game', gameController.createGame);
+app.get('/game/:id', gameController.getGame);
 
 module.exports = app;
