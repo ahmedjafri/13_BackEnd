@@ -14,8 +14,7 @@ module.exports = {
         // [TODO] - more meaningful error messages
         friendUserIds.forEach(function(id) {
             if(!id){
-                res.status(400) // 400 Bad Request
-                res.send("error")
+                res.status(400).send("error") // 400 Bad Request
                 return;
             }
         });
@@ -35,5 +34,23 @@ module.exports = {
                     });
                 })
         });
+    },
+
+    getGame: function(req,res) {
+        gameId = req.params.id;
+
+        db.Game.find({ where: {id: gameId}, include: [
+            {
+              model: db.Player, 
+              include: [
+                db.User
+              ]  
+            }
+        ] }).then(function(game){ 
+            res.send(game)
+        }).catch(function(error){
+            res.status(500).send(error.message)
+            console.log(error)
+        })
     }
 };
