@@ -15,7 +15,7 @@ app.get('/', function(req, res) {
 });
 
 app.post('/game', gameController.createGame);
-app.post('/game/:id/join', gameController.joinGame);
+app.put('/game/:id', gameController.joinGame);
 
 app.get('/game/:id', gameController.getGame);
 

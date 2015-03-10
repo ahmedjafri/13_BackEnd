@@ -1,6 +1,7 @@
 var db = require('../models/index');
 var gameUtils = require('../lib/gameUtils');
 var Q = require('q');
+var Deck = require('../lib/Deck');
 
 module.exports = {
     createGame: function(req, res) {
@@ -31,16 +32,19 @@ module.exports = {
     },
 
     joinGame: function(req, res) {
-        var gameId = req.params.gameId;
-        var playerId = req.body.playerId;
+        var gameId = req.params.id;
+        var userId = req.body.userId;
+
+        // update player to have status of joined
         db.Player.update({
-            status: 1
+            status: 1 // joined game status
         }, {
             where: {
-                user_id: playerId,
+                user_id: userId,
                 game_id: gameId
             }
-        }).then(function() {
+        }).then(function(updateCount) {
+            console.log('count', updateCount);
             return db.Player.findAll({
                 where: {
                     game_id: gameId
@@ -55,14 +59,31 @@ module.exports = {
                 db.Game.update({ playState: 1 }, { where: { id: gameId }})
                     .then(function() {
                         // TODO: send push notifications to all the players
-                        res.status(200).send({ message: 'Player successfully joined.'});
+                        var hands = (new Deck()).deal(players.length);
+                        var playerUpdatePromises = [];
+                        players.forEach(function(player, index) {
+                            var hand = JSON.stringify(hands[index]);
+                            playerUpdatePromises.push(player.update({
+                                hand: hand
+                            }));
+                        });
+                        Q.all(playerUpdatePromises)
+                            .then(function() {
+                                res.status(200).send({ message: 'Player successfully joined.'});
+                            })
+                            .catch(function(err) {
+                                res.status(500).send(err.message);
+                            });
                     })
                     .catch(function(err) {
-                        res.status(500).send(err.message)
+                        res.status(500).send(err.message);
                     });
             }
+        }).catch(function(err) {
+            res.status(500).send(err.message);
         });
     },
+
 
     getGame: function(req,res) {
         gameId = req.params.id;
