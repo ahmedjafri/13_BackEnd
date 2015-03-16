@@ -1,6 +1,7 @@
 'use strict';
 
-var app = require('./routes');
+var express = require('express');
+var app = express();
 app.drywall = require('drywall');
 var Sequelize = require('sequelize');
 
@@ -17,10 +18,13 @@ app.db.sequelize = new Sequelize('thirteen', 'thirteen', 'ZPMKZ82fhNjXDD78', {
 });
 app.db.Sequelize = Sequelize;
 
-require('./models')(app);
-
 app.drywall.useDB(app.db);
 app.use(app.drywall);
+
+require('./models')(app);
+
+require('./routes')(app);
+
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
