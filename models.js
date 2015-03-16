@@ -22,7 +22,7 @@ module.exports = function(app){
     });
 
     app.db.models.User.hasMany(app.db.models.Player, {foreignKey : 'user_id'});
-    
+
     var testUsers = [];
     testUsers.push({
         username: "ajafri",
@@ -55,7 +55,7 @@ module.exports = function(app){
                 console.log(testUser.username, " already taken");
             } else {
                 app.db.models.User.encryptPassword(testUser.password, function(err, hash) {
-                    app.db.models.User.create({username:testUser.username,password:hash})
+                    app.db.models.User.create({username:testUser.username,password:hash,'isVerified':'yes'})
                     .catch(function (err) {
                         console.log('exception', err);
                     })
@@ -65,14 +65,7 @@ module.exports = function(app){
                             console.log('exception', err);
                         })
                         .then(function(account) {
-                            //update user with account
-                            user.setAccount(account)
-                            .catch(function (err) {
-                                console.log('exception', err);
-                            })
-                            .then(function() {
-                                // done
-                            });
+                            //
                         });
                     });
                 });
