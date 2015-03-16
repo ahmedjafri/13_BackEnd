@@ -9,11 +9,6 @@ app.use(bodyParser.json());
 
 var gameController = require('./controllers/gameController');
 
-app.get('/', function(req, res) {
-	console.log('yeeee buddy');
-	res.status(200).send('success');
-});
-
 app.post('/game', gameController.createGame);
 app.get('/game/:id', gameController.getGame);
 
