@@ -14,31 +14,69 @@ module.exports = function(app){
         app.db.models[model.name] = model;
     });
 
-    ['Game', 'User', 'Player'].forEach(function(modelName) {
+    ['Game', 'Player'].forEach(function(modelName) {
         if ('associate' in app.db.models[modelName]) {
             app.db.models[modelName].associate(app.db.models);
             app.db.models[modelName].sync().then(function() {console.log("Synced ", modelName)});
         } 
     });
 
-    app.db.models.User.create({
-        firstName: 'Ahmed',
-        lastName: 'Jafri'
+    app.db.models.User.hasMany(app.db.models.Player, {foreignKey : 'user_id'});
+    
+    var testUsers = [];
+    testUsers.push({
+        username: "ajafri",
+        password: "lol",
+        name_full: "Ahmed Jafri"
     });
-    app.db.models.User.create({
-            firstName: 'Paul',
-            lastName: 'Yi'
+    testUsers.push({
+        username: "paulyi",
+        password: "lol",
+        name_full: "Paul Yi"
+    });
+    testUsers.push({
+        username: "tmatsumoto",
+        password: "lol",
+        name_full: "Taiga Matsumoto"
+    });    
+    testUsers.push({
+        username: "vienly",
+        password: "lol",
+        name_full: "Vien Ly"
+    }); 
+
+    testUsers.forEach(function(testUser){
+        app.db.models.User.findAndCountAll({where: { username: testUser.username }})
+        .catch(function (err) {
+            console.log('exception', err);
+        })
+        .then(function (result) {
+            if (result.count > 0) {
+                console.log(testUser.username, " already taken");
+            } else {
+                app.db.models.User.encryptPassword(testUser.password, function(err, hash) {
+                    app.db.models.User.create({username:testUser.username,password:hash})
+                    .catch(function (err) {
+                        console.log('exception', err);
+                    })
+                    .then(function(user) {
+                        app.db.models.Account.create({'isVerified':'yes','name_full':testUser.name_full,'user_id':user.id})
+                        .catch(function (err) {
+                            console.log('exception', err);
+                        })
+                        .then(function(account) {
+                            //update user with account
+                            user.setAccount(account)
+                            .catch(function (err) {
+                                console.log('exception', err);
+                            })
+                            .then(function() {
+                                // done
+                            });
+                        });
+                    });
+                });
+            }
         });
-    app.db.models.User.create({
-            firstName: 'Taiga',
-            lastName: 'Matsumoto'
-        });
-    app.db.models.User.create({
-            firstName: 'Vien',
-            lastName: 'Ly'
-        });
-    app.db.models.User.create({
-            firstName: 'Jake',
-            lastName: 'Yang'
-        });
+    })
 };
