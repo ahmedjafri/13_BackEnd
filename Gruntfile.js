@@ -25,7 +25,7 @@ module.exports = function(grunt){
     express: {
         all: {
             options: {
-                server: path.resolve(__dirname, 'server.js'),
+                server: path.resolve(__dirname, 'app.js'),
                 port: 3000,
                 hostname: "localhost"
             }
