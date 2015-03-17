@@ -6,7 +6,13 @@ module.exports = function(app){
             console.log(req.body)
             var friendUserIds = req.body.friendUserIds;
             var gameCreatorUserId = req.body.gameCreatorUserId;
-            friendUserIds.push(gameCreatorUserId);
+
+            if(friendUserIds && friendUserIds instanceof Array)
+                friendUserIds.push(gameCreatorUserId);
+            else {
+                res.status(400).send({"error":"please set friendUserIds (it is an array)."}) // 400 Bad Request
+                return;
+            }
 
             // before we save anything to the mysql lets sanitize 
             // the input and return appropriate errors
@@ -14,8 +20,16 @@ module.exports = function(app){
             // [TODO] - more meaningful error messages
             friendUserIds.forEach(function(id) {
                 if(!id){
-                    res.status(400).send("error") // 400 Bad Request
+                    res.status(400).send({"error":"gameCreatorUserId is not defined."}) // 400 Bad Request
                     return;
+                }else {
+                    app.db.models.User.findAndCountAll({where: {id: id}})
+                    .then(function(result){
+                        if(result.count <= 0){
+                            res.status(400).send({"error":"id " + id + " does not exist."}) // 400 Bad Request
+                            return;
+                        }
+                    });
                 }
             });
 
@@ -26,11 +40,18 @@ module.exports = function(app){
                 }));
             });
 
-            app.db.models.Game.create().then(function(game){
+            app.db.models.Game.create()
+            .catch(function(err){
+                res.status(500).send(err);
+            })
+            .then(function(game){
                 Q.all(playerCreatePromises)
+                    .catch(function(err){
+                        res.status(500).send(err);
+                    })
                     .then(function(playerInstances) {
                         game.setPlayers(playerInstances).then(function(){ 
-                            res.send(game) 
+                            res.send(game);
                         });
                     })
             });
