@@ -25,6 +25,7 @@ require('./models')(app);
 
 require('./routes')(app);
 
+app.drywall.addRoutes();
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
