@@ -20,6 +20,7 @@ module.exports = function(app){
   
   	app.all('/api*', ensureAuthenticated);
 
+	app.get('/api/games', gameController.getAllGames);
 	app.post('/api/game', gameController.createGame);
 	app.get('/api/game/:id', gameController.getGame);
 };

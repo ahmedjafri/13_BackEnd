@@ -67,7 +67,28 @@ module.exports = function(app){
                   ]  
                 }
             ] }).then(function(game){ 
-                res.send(game)
+                if(game)
+                    res.send(game);
+                else
+                    res.status(404).send({"error":"No game at this endpoint."});
+            }).catch(function(error){
+                res.status(500).send(error.message)
+                console.log(error)
+            })
+        },
+
+        getAllGames: function(req,res) {
+            gameId = req.params.id;
+
+            app.db.models.Game.findAll({include: [{
+                model:app.db.models.Player,
+                where: {"user_id": req.user.id}
+            }]})
+            .then(function(players){ 
+                if(players)
+                    res.send(players);
+                else
+                    res.status(404).send({"error":"No games here."});
             }).catch(function(error){
                 res.status(500).send(error.message)
                 console.log(error)
