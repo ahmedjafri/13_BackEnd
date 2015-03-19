@@ -8,7 +8,7 @@ function ensureAuthenticated(req, res, next) {
   }
   res.set('X-Auth-Required', 'true');
   req.session.returnUrl = req.originalUrl;
-  res.status(401).send({"loginURL":"/login"});
+  res.status(401).send({"loginURL": "http://" + req.get('host') + "/login"});
 }
 
 module.exports = function(app){
